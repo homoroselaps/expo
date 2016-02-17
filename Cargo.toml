@@ -3,5 +3,14 @@ name = "exp-o"
 version = "0.1.0"
 authors = ["Alexander Popiak <alexander.popiak@gmail.com>"]
 
+[[bin]]
+name = "expo"
+path = "src/main.rs"
+doc = false
+
+[lib]
+name = "expo"
+path = "src/expo/lib.rs"
+
 [dependencies]
 nom = "1.2.0"

@@ -1,0 +1,72 @@
+use utils::vec_to_i64;
+
+#[derive(Debug)]
+pub enum Operator {
+    Plus,
+    Minus,
+    Times,
+    Divide,
+}
+
+#[derive(Debug)]
+pub enum Literal {
+    Integer(i64)
+}
+
+pub type Arguments = Vec<Expression>;
+
+#[derive(Debug)]
+pub enum Expression {
+    Literal(Literal),
+    Call(Operator, Arguments),
+}
+
+named!(sign <&[u8], i64>, map!(tag!("-"), |_| -1 ));
+
+named!(integer  <&[u8], Literal>, map!(
+    many1!(one_of!(b"0123456789")),
+    | vector |  Literal::Integer(vec_to_i64(vector))
+));
+
+named!(operator <&[u8], Operator>, alt!(
+    map!(tag!("+"), |_| Operator::Plus) |
+    map!(tag!("-"), |_| Operator::Minus) |
+    map!(tag!("*"), |_| Operator::Times) |
+    map!(tag!("/"), |_| Operator::Divide)
+));
+
+named!(number <&[u8], Literal>, chain!(
+        pref: opt!(sign) ~
+        y:    integer,
+        || {
+            let Literal::Integer(num) = y;
+            Literal::Integer(pref.unwrap_or(1) * num)
+        }
+));
+
+named!(arguments <&[u8], Arguments>, many1!(
+    chain!(
+        tag!(" ") ~
+        exp: expression,
+        || { exp }
+    )
+));
+
+named!(pub expression <&[u8], Expression>, alt!(
+    chain!(
+        num: number,
+        || { Expression::Literal(num) }
+    ) |
+    chain!(
+        open: char!('(') ~
+        op: operator ~
+        args: arguments ~
+        close: char!(')'),
+        || { Expression::Call(op, args) }
+    )
+));
+
+pub fn parse(s: &mut String) {
+    let expr = expression(s.as_bytes());
+    println!("{:?}", expr);
+}
