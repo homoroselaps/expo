@@ -14,3 +14,4 @@ path = "src/expo/lib.rs"
 
 [dependencies]
 nom = "1.2.0"
+verex = "0.2"

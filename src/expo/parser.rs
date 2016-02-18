@@ -1,3 +1,5 @@
+use nom::IResult;
+
 use utils::vec_to_i64;
 use ast::*;
 
@@ -19,12 +21,11 @@ named!(number <&[u8], Literal>, chain!(
         pref: opt!(sign) ~
         y:    integer,
         || {
-            let Literal::Integer(num) = y;
-            Literal::Integer(pref.unwrap_or(1) * num)
+            Literal::Integer(pref.unwrap_or(1) * y.eval())
         }
 ));
 
-named!(arguments <&[u8], Arguments>, many1!(
+named!(arguments <&[u8], Vec<Expression> >, many1!(
     chain!(
         tag!(" ") ~
         exp: expression,
@@ -48,5 +49,10 @@ named!(pub expression <&[u8], Expression>, alt!(
 
 pub fn parse(s: &mut String) {
     let expr = expression(s.as_bytes());
-    println!("{:?}", expr);
+    if let IResult::Done(i, output) = expr {
+        println!("{:?}", output.eval());
+    }
+    else {
+        println!("error while parsing: {:?}", expr);
+    }
 }
