@@ -2,7 +2,7 @@ pub trait Eval {
     fn eval(&self) -> i64;
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub enum Operator {
     Plus,
     Minus,
@@ -42,7 +42,7 @@ impl Eval for Literal {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub enum Expression {
     Literal(Literal),
     Call(Operator, Vec<Expression>),
