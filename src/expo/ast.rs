@@ -3,6 +3,18 @@ pub trait Eval {
 }
 
 #[derive(Debug)]
+pub enum ExpoResult<'r> {
+    Value(i64),
+    Error(Error<'r>)
+}
+
+#[derive(Debug)]
+pub struct Error<'e> {
+    number: i16,
+    message: &'e str,
+}
+
+#[derive(Debug)]
 pub enum Operator {
     Plus,
     Minus,
