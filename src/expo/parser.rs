@@ -19,9 +19,12 @@ named!(operator <&[u8], Operator>, alt!(
 
 named!(number <&[u8], Literal>, chain!(
         pref: opt!(sign) ~
-        y:    integer,
+        int:  integer,
         || {
-            Literal::Integer(pref.unwrap_or(1) * y.eval())
+            match int.eval() {
+                ExpoResult::Value(num) => Literal::Integer(pref.unwrap_or(1) * num),
+                ExpoResult::Error(_) => panic!(),
+            }
         }
 ));
 
@@ -49,7 +52,7 @@ named!(pub expression <&[u8], Expression>, alt!(
 
 pub fn parse(s: &mut String) {
     let expr = expression(s.as_bytes());
-    if let IResult::Done(i, output) = expr {
+    if let IResult::Done(_, output) = expr {
         println!("{:?}", output.eval());
     }
     else {
