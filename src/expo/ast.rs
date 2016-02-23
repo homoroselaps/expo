@@ -69,9 +69,9 @@ impl Operator {
                 )
             },
             Operator::Divide => {
-                let iter = args.iter();
-                // let first = iter.next().expect("first argument has to exist");
-                iter.fold(ExpoResult::Value(1),
+                let mut iter = args.iter();
+                let first = iter.next().expect("first argument has to exist");
+                iter.fold(first.eval(),
                     |acc, x: &Expression| {
                         acc.map(Div::div, x.eval())
                     }
